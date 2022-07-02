@@ -1,4 +1,7 @@
-all: kq fioclex inherit pthreads var memset memcmp inet_conv fs cp server-socket client-socket signals select socket-options resolv strings array unix-domain macro function-pointer pthread-mutex pthread-sema pthread-sigwait sigaction
+GCC := $(shell which gcc)
+export GCC
+
+all: kq fioclex inherit pthreads-once var memset memcmp inet_conv fs cp server-socket client-socket signals select socket-options resolv strings array unix-domain macro function-pointer pthread-mutex pthread-sema pthread-sigwait sigaction
 
 kq: kqueue.c
 	${CC} -o kq -g kqueue.c
@@ -61,7 +64,9 @@ macropre: macro.cc
 	${CC} -E -g macro.cc
 
 function-pointer: function-pointer.c
-	${CC}++ -std=c++11 -o function-pointer -g function-pointer.c
+	@echo GCC=${GCC}
+	${GCC} -o function-pointer -g function-pointer.c
+	# gcc -o function-pointer -g function-pointer.c
 
 pthread-mutex: pthread-mutex.c
 	${CC} -o pthread-mutex -g pthread-mutex.c
@@ -100,14 +105,14 @@ ringbuffer: ringbuffer.c
 
 .PHONY: clean tcpdump
 
-clean: 
+clean:
 	rm -f fioclex kq inherit pthreads-once var memset memcmp inet_conv fs cp client-socket server-socket select signals socket-options resolv strings array unix-domain macro function-pointer pthread-sema pthread-sigwait sigaction ringbuffer
 
-tcpdump: 
+tcpdump:
 	sudo tcpdump -nnvvXS -i lo0 port 9999
 
 .PHONY: print
-print: 
+print:
 ifeq ($(something),"bajja")
 	@echo $(something)
 else
@@ -129,17 +134,17 @@ args:
 node: deps
 	@echo "running node..."
 
-deps: 
+deps:
 	@echo "deps..."
 
-echo: 
+echo:
 	echo $(jobs) $*
 
 file-dep: somefile
 	@echo "running $@..."
 
 somefile: somevar=Release
-somefile: 
+somefile:
 	@echo "from second somefile target. somevar=$(somevar)" $@
 
 libev: libev.c
@@ -162,7 +167,7 @@ im-example: 123456.intermediate
 	@echo "im.dep running intermedate...."
 	touch 123456.intermediate
 
-depfile: 
+depfile:
 	@echo "making depfile..."
 
 comma: comma.c
